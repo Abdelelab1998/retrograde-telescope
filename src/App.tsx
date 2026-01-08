@@ -409,9 +409,9 @@ export default function App() {
 // Desktop Panel Component
 function FlightPanel({ flight, originAirport, destinationAirport, originWeather, destinationWeather, onClose, onCenter, theme }: any) {
   return (
-    <div className={`absolute top-6 right-6 bottom-6 w-[400px] z-30 flex flex-col rounded-lg shadow-2xl border overflow-hidden backdrop-blur-xl ${currentTheme === 'dark' ? 'border-white/10 bg-[#1a1a1a]' : 'border-gray-200 bg-white'}`}>
+    <div className={`absolute top-6 right-6 bottom-6 w-[400px] z-30 flex flex-col rounded-lg shadow-2xl border overflow-hidden backdrop-blur-xl ${theme === 'dark' ? 'border-white/10 bg-[#1a1a1a]' : 'border-gray-200 bg-white'}`}>
       <div className="absolute top-5 right-5 z-40">
-        <button onClick={onClose} className={`p-2 rounded transition-colors ${currentTheme === 'dark' ? 'bg-white/10 hover:bg-white/20 text-white/70' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}>
+        <button onClick={onClose} className={`p-2 rounded transition-colors ${theme === 'dark' ? 'bg-white/10 hover:bg-white/20 text-white/70' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}>
           <X className="w-4 h-4" />
         </button>
       </div>
@@ -423,7 +423,7 @@ function FlightPanel({ flight, originAirport, destinationAirport, originWeather,
           originWeather={originWeather}
           destinationWeather={destinationWeather}
           onCenter={onCenter}
-          theme={currentTheme}
+          theme={theme}
         />
       </div>
     </div>
@@ -435,21 +435,21 @@ function FlightPanelContent({ flight, originAirport, destinationAirport, originW
   return (
     <>
       <div className="mb-6">
-        <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded border text-[10px] font-semibold mb-3 ${currentTheme === 'dark' ? 'bg-white/10 border-white/20 text-white' : 'bg-gray-100 border-gray-300 text-gray-700'}`}>
+        <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded border text-[10px] font-semibold mb-3 ${theme === 'dark' ? 'bg-white/10 border-white/20 text-white' : 'bg-gray-100 border-gray-300 text-gray-700'}`}>
           Live Data
         </div>
 
-        <h2 className={`text-5xl font-bold mb-5 ${currentTheme === 'dark' ? 'text-white' : 'text-gray-900'}`} style={{ fontFamily: 'JetBrains Mono, monospace' }}>
+        <h2 className={`text-5xl font-bold mb-5 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`} style={{ fontFamily: 'JetBrains Mono, monospace' }}>
           {flight.callsign}
         </h2>
 
-        <div className={`flex items-center gap-3 p-3 rounded-lg border ${currentTheme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-200'}`}>
-          <div className={`w-11 h-11 rounded flex items-center justify-center ${currentTheme === 'dark' ? 'bg-white/20' : 'bg-gray-200'}`}>
-            <Plane className={`w-5 h-5 ${currentTheme === 'dark' ? 'text-white' : 'text-gray-700'}`} />
+        <div className={`flex items-center gap-3 p-3 rounded-lg border ${theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-200'}`}>
+          <div className={`w-11 h-11 rounded flex items-center justify-center ${theme === 'dark' ? 'bg-white/20' : 'bg-gray-200'}`}>
+            <Plane className={`w-5 h-5 ${theme === 'dark' ? 'text-white' : 'text-gray-700'}`} />
           </div>
           <div className="flex-1">
-            <div className={`text-sm font-semibold mb-0.5 ${currentTheme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{flight.airline}</div>
-            <div className={`text-xs ${currentTheme === 'dark' ? 'text-white/50' : 'text-gray-500'}`}>{flight.aircraft}</div>
+            <div className={`text-sm font-semibold mb-0.5 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{flight.airline}</div>
+            <div className={`text-xs ${theme === 'dark' ? 'text-white/50' : 'text-gray-500'}`}>{flight.aircraft}</div>
           </div>
         </div>
       </div>
@@ -457,33 +457,33 @@ function FlightPanelContent({ flight, originAirport, destinationAirport, originW
       {/* Weather Information for Origin and Destination - Only show if airports are known */}
       {(flight.origin !== 'N/A' || flight.destination !== 'N/A') && (
         <div className="mb-6 space-y-3">
-          <div className={`text-[10px] font-semibold uppercase tracking-wide px-0.5 ${currentTheme === 'dark' ? 'text-white/40' : 'text-gray-500'}`}>Airport Weather</div>
+          <div className={`text-[10px] font-semibold uppercase tracking-wide px-0.5 ${theme === 'dark' ? 'text-white/40' : 'text-gray-500'}`}>Airport Weather</div>
 
           {/* Origin Weather */}
           {flight.origin !== 'N/A' && (
             <div>
-              <div className={`text-[9px] font-medium mb-1.5 px-0.5 uppercase tracking-wide ${currentTheme === 'dark' ? 'text-white/30' : 'text-gray-400'}`}>
+              <div className={`text-[9px] font-medium mb-1.5 px-0.5 uppercase tracking-wide ${theme === 'dark' ? 'text-white/30' : 'text-gray-400'}`}>
                 Takeoff - {flight.origin} {originAirport && `(${originAirport.city})`}
               </div>
               {originWeather ? (
-                <div className={`p-3 rounded-lg border ${currentTheme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-200'}`}>
+                <div className={`p-3 rounded-lg border ${theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-200'}`}>
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <Cloud className={`w-6 h-6 ${currentTheme === 'dark' ? 'text-white/60' : 'text-gray-600'}`} />
+                      <Cloud className={`w-6 h-6 ${theme === 'dark' ? 'text-white/60' : 'text-gray-600'}`} />
                       <div>
-                        <div className={`text-xl font-bold ${currentTheme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{Math.round(originWeather.temp)}°C</div>
-                        <div className={`text-[10px] capitalize ${currentTheme === 'dark' ? 'text-white/50' : 'text-gray-500'}`}>{originWeather.weather_description}</div>
+                        <div className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{Math.round(originWeather.temp)}°C</div>
+                        <div className={`text-[10px] capitalize ${theme === 'dark' ? 'text-white/50' : 'text-gray-500'}`}>{originWeather.weather_description}</div>
                       </div>
                     </div>
-                    <div className={`text-[10px] ${currentTheme === 'dark' ? 'text-white/40' : 'text-gray-500'}`}>Feels {Math.round(originWeather.feels_like)}°C</div>
+                    <div className={`text-[10px] ${theme === 'dark' ? 'text-white/40' : 'text-gray-500'}`}>Feels {Math.round(originWeather.feels_like)}°C</div>
                   </div>
-                  <div className={`grid grid-cols-2 gap-2 mt-2 pt-2 border-t ${currentTheme === 'dark' ? 'border-white/10' : 'border-gray-200'}`}>
-                    <WeatherItem icon={Wind} label="Wind" value={`${Math.round(originWeather.wind_speed * 3.6)} km/h`} theme={currentTheme} />
-                    <WeatherItem icon={Droplets} label="Humidity" value={`${originWeather.humidity}%`} theme={currentTheme} />
+                  <div className={`grid grid-cols-2 gap-2 mt-2 pt-2 border-t ${theme === 'dark' ? 'border-white/10' : 'border-gray-200'}`}>
+                    <WeatherItem icon={Wind} label="Wind" value={`${Math.round(originWeather.wind_speed * 3.6)} km/h`} theme={theme} />
+                    <WeatherItem icon={Droplets} label="Humidity" value={`${originWeather.humidity}%`} theme={theme} />
                   </div>
                 </div>
               ) : (
-                <div className={`p-3 rounded-lg border flex items-center justify-center text-xs ${currentTheme === 'dark' ? 'bg-white/5 border-white/10 text-white/40' : 'bg-gray-50 border-gray-200 text-gray-500'}`}>
+                <div className={`p-3 rounded-lg border flex items-center justify-center text-xs ${theme === 'dark' ? 'bg-white/5 border-white/10 text-white/40' : 'bg-gray-50 border-gray-200 text-gray-500'}`}>
                   <Cloud className="w-4 h-4 mr-2 animate-pulse" />
                   Loading...
                 </div>
@@ -494,28 +494,28 @@ function FlightPanelContent({ flight, originAirport, destinationAirport, originW
           {/* Destination Weather */}
           {flight.destination !== 'N/A' && (
             <div>
-              <div className={`text-[9px] font-medium mb-1.5 px-0.5 uppercase tracking-wide ${currentTheme === 'dark' ? 'text-white/30' : 'text-gray-400'}`}>
+              <div className={`text-[9px] font-medium mb-1.5 px-0.5 uppercase tracking-wide ${theme === 'dark' ? 'text-white/30' : 'text-gray-400'}`}>
                 Arrival - {flight.destination} {destinationAirport && `(${destinationAirport.city})`}
               </div>
               {destinationWeather ? (
-                <div className={`p-3 rounded-lg border ${currentTheme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-200'}`}>
+                <div className={`p-3 rounded-lg border ${theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-200'}`}>
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <Cloud className={`w-6 h-6 ${currentTheme === 'dark' ? 'text-white/60' : 'text-gray-600'}`} />
+                      <Cloud className={`w-6 h-6 ${theme === 'dark' ? 'text-white/60' : 'text-gray-600'}`} />
                       <div>
-                        <div className={`text-xl font-bold ${currentTheme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{Math.round(destinationWeather.temp)}°C</div>
-                        <div className={`text-[10px] capitalize ${currentTheme === 'dark' ? 'text-white/50' : 'text-gray-500'}`}>{destinationWeather.weather_description}</div>
+                        <div className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{Math.round(destinationWeather.temp)}°C</div>
+                        <div className={`text-[10px] capitalize ${theme === 'dark' ? 'text-white/50' : 'text-gray-500'}`}>{destinationWeather.weather_description}</div>
                       </div>
                     </div>
-                    <div className={`text-[10px] ${currentTheme === 'dark' ? 'text-white/40' : 'text-gray-500'}`}>Feels {Math.round(destinationWeather.feels_like)}°C</div>
+                    <div className={`text-[10px] ${theme === 'dark' ? 'text-white/40' : 'text-gray-500'}`}>Feels {Math.round(destinationWeather.feels_like)}°C</div>
                   </div>
-                  <div className={`grid grid-cols-2 gap-2 mt-2 pt-2 border-t ${currentTheme === 'dark' ? 'border-white/10' : 'border-gray-200'}`}>
-                    <WeatherItem icon={Wind} label="Wind" value={`${Math.round(destinationWeather.wind_speed * 3.6)} km/h`} theme={currentTheme} />
-                    <WeatherItem icon={Droplets} label="Humidity" value={`${destinationWeather.humidity}%`} theme={currentTheme} />
+                  <div className={`grid grid-cols-2 gap-2 mt-2 pt-2 border-t ${theme === 'dark' ? 'border-white/10' : 'border-gray-200'}`}>
+                    <WeatherItem icon={Wind} label="Wind" value={`${Math.round(destinationWeather.wind_speed * 3.6)} km/h`} theme={theme} />
+                    <WeatherItem icon={Droplets} label="Humidity" value={`${destinationWeather.humidity}%`} theme={theme} />
                   </div>
                 </div>
               ) : (
-                <div className={`p-3 rounded-lg border flex items-center justify-center text-xs ${currentTheme === 'dark' ? 'bg-white/5 border-white/10 text-white/40' : 'bg-gray-50 border-gray-200 text-gray-500'}`}>
+                <div className={`p-3 rounded-lg border flex items-center justify-center text-xs ${theme === 'dark' ? 'bg-white/5 border-white/10 text-white/40' : 'bg-gray-50 border-gray-200 text-gray-500'}`}>
                   <Cloud className="w-4 h-4 mr-2 animate-pulse" />
                   Loading...
                 </div>
@@ -527,40 +527,40 @@ function FlightPanelContent({ flight, originAirport, destinationAirport, originW
 
       {/* Route */}
       <div className="mb-6">
-        <div className={`text-[10px] font-semibold uppercase tracking-wide mb-2 px-0.5 ${currentTheme === 'dark' ? 'text-white/40' : 'text-gray-500'}`}>Flight Path</div>
-        <div className={`p-5 rounded-lg border ${currentTheme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-200'}`}>
+        <div className={`text-[10px] font-semibold uppercase tracking-wide mb-2 px-0.5 ${theme === 'dark' ? 'text-white/40' : 'text-gray-500'}`}>Flight Path</div>
+        <div className={`p-5 rounded-lg border ${theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-200'}`}>
           {flight.origin !== 'N/A' || flight.destination !== 'N/A' ? (
             <>
               <div className="flex items-center justify-between gap-3">
                 <div className="flex-1 text-center">
-                  <div className={`text-[10px] font-medium mb-2 uppercase tracking-wide ${currentTheme === 'dark' ? 'text-white/40' : 'text-gray-500'}`}>Origin</div>
-                  <div className={`text-3xl font-bold ${currentTheme === 'dark' ? 'text-white' : 'text-gray-900'}`} style={{ fontFamily: 'JetBrains Mono, monospace' }}>{flight.origin}</div>
-                  {originAirport && <div className={`text-[9px] mt-1 ${currentTheme === 'dark' ? 'text-white/30' : 'text-gray-500'}`}>{originAirport.city}</div>}
+                  <div className={`text-[10px] font-medium mb-2 uppercase tracking-wide ${theme === 'dark' ? 'text-white/40' : 'text-gray-500'}`}>Origin</div>
+                  <div className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`} style={{ fontFamily: 'JetBrains Mono, monospace' }}>{flight.origin}</div>
+                  {originAirport && <div className={`text-[9px] mt-1 ${theme === 'dark' ? 'text-white/30' : 'text-gray-500'}`}>{originAirport.city}</div>}
                 </div>
 
                 <div className="flex items-center gap-2 px-3">
-                  <div className={`w-12 h-px ${currentTheme === 'dark' ? 'bg-white/20' : 'bg-gray-300'}`}></div>
-                  <ArrowRight className={`w-4 h-4 ${currentTheme === 'dark' ? 'text-white/60' : 'text-gray-600'}`} />
-                  <div className={`w-12 h-px ${currentTheme === 'dark' ? 'bg-white/20' : 'bg-gray-300'}`}></div>
+                  <div className={`w-12 h-px ${theme === 'dark' ? 'bg-white/20' : 'bg-gray-300'}`}></div>
+                  <ArrowRight className={`w-4 h-4 ${theme === 'dark' ? 'text-white/60' : 'text-gray-600'}`} />
+                  <div className={`w-12 h-px ${theme === 'dark' ? 'bg-white/20' : 'bg-gray-300'}`}></div>
                 </div>
 
                 <div className="flex-1 text-center">
-                  <div className={`text-[10px] font-medium mb-2 uppercase tracking-wide ${currentTheme === 'dark' ? 'text-white/40' : 'text-gray-500'}`}>Destination</div>
-                  <div className={`text-3xl font-bold ${currentTheme === 'dark' ? 'text-white' : 'text-gray-900'}`} style={{ fontFamily: 'JetBrains Mono, monospace' }}>{flight.destination}</div>
-                  {destinationAirport && <div className={`text-[9px] mt-1 ${currentTheme === 'dark' ? 'text-white/30' : 'text-gray-500'}`}>{destinationAirport.city}</div>}
+                  <div className={`text-[10px] font-medium mb-2 uppercase tracking-wide ${theme === 'dark' ? 'text-white/40' : 'text-gray-500'}`}>Destination</div>
+                  <div className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`} style={{ fontFamily: 'JetBrains Mono, monospace' }}>{flight.destination}</div>
+                  {destinationAirport && <div className={`text-[9px] mt-1 ${theme === 'dark' ? 'text-white/30' : 'text-gray-500'}`}>{destinationAirport.city}</div>}
                 </div>
               </div>
 
-              <div className={`mt-4 pt-4 border-t flex items-center justify-center gap-2 text-xs ${currentTheme === 'dark' ? 'border-white/10 text-white/50' : 'border-gray-200 text-gray-600'}`}>
+              <div className={`mt-4 pt-4 border-t flex items-center justify-center gap-2 text-xs ${theme === 'dark' ? 'border-white/10 text-white/50' : 'border-gray-200 text-gray-600'}`}>
                 <Plane className="w-3 h-3" />
                 <span>Currently over {flight.origin_country}</span>
               </div>
             </>
           ) : (
             <div className="flex flex-col items-center justify-center py-4 text-center">
-              <MapPin className={`w-8 h-8 mb-2 ${currentTheme === 'dark' ? 'text-white/20' : 'text-gray-300'}`} />
-              <div className={`text-sm mb-1 ${currentTheme === 'dark' ? 'text-white/40' : 'text-gray-500'}`}>Route information unavailable</div>
-              <div className={`text-[10px] ${currentTheme === 'dark' ? 'text-white/30' : 'text-gray-400'}`}>Currently over {flight.origin_country}</div>
+              <MapPin className={`w-8 h-8 mb-2 ${theme === 'dark' ? 'text-white/20' : 'text-gray-300'}`} />
+              <div className={`text-sm mb-1 ${theme === 'dark' ? 'text-white/40' : 'text-gray-500'}`}>Route information unavailable</div>
+              <div className={`text-[10px] ${theme === 'dark' ? 'text-white/30' : 'text-gray-400'}`}>Currently over {flight.origin_country}</div>
             </div>
           )}
         </div>
@@ -568,24 +568,24 @@ function FlightPanelContent({ flight, originAirport, destinationAirport, originW
 
       {/* Telemetry */}
       <div className="grid grid-cols-2 gap-3 mb-6">
-        <TelemetryCard icon={Gauge} label="Altitude" value={Math.round(flight.altitude).toLocaleString()} unit="FT" theme={currentTheme} />
-        <TelemetryCard icon={Wind} label="Speed" value={Math.round(flight.velocity).toLocaleString()} unit="KTS" theme={currentTheme} />
-        <TelemetryCard icon={flight.vertical_rate > 1 ? TrendingUp : TrendingDown} label="V/S" value={Math.abs(Math.round(flight.vertical_rate)).toLocaleString()} unit="FPM" theme={currentTheme} />
-        <TelemetryCard icon={Navigation} label="Heading" value={Math.round(flight.heading).toString().padStart(3, '0')} unit="°" theme={currentTheme} />
+        <TelemetryCard icon={Gauge} label="Altitude" value={Math.round(flight.altitude).toLocaleString()} unit="FT" theme={theme} />
+        <TelemetryCard icon={Wind} label="Speed" value={Math.round(flight.velocity).toLocaleString()} unit="KTS" theme={theme} />
+        <TelemetryCard icon={flight.vertical_rate > 1 ? TrendingUp : TrendingDown} label="V/S" value={Math.abs(Math.round(flight.vertical_rate)).toLocaleString()} unit="FPM" theme={theme} />
+        <TelemetryCard icon={Navigation} label="Heading" value={Math.round(flight.heading).toString().padStart(3, '0')} unit="°" theme={theme} />
       </div>
 
       {/* System Data */}
       <div className="space-y-0.5 mb-6">
-        <div className={`text-[10px] font-semibold uppercase tracking-wide px-0.5 mb-1.5 ${currentTheme === 'dark' ? 'text-white/40' : 'text-gray-500'}`}>Technical Data</div>
-        <InfoRow label="ICAO24" value={flight.icao24.toUpperCase()} theme={currentTheme} />
-        <InfoRow label="Country" value={flight.origin_country} theme={currentTheme} />
-        <InfoRow label="Updated" value={format(new Date(), 'HH:mm:ss')} theme={currentTheme} />
+        <div className={`text-[10px] font-semibold uppercase tracking-wide px-0.5 mb-1.5 ${theme === 'dark' ? 'text-white/40' : 'text-gray-500'}`}>Technical Data</div>
+        <InfoRow label="ICAO24" value={flight.icao24.toUpperCase()} theme={theme} />
+        <InfoRow label="Country" value={flight.origin_country} theme={theme} />
+        <InfoRow label="Updated" value={format(new Date(), 'HH:mm:ss')} theme={theme} />
       </div>
 
       {/* Action Button */}
       <button
         onClick={onCenter}
-        className={`w-full py-3 rounded-lg font-semibold text-sm transition-colors ${currentTheme === 'dark' ? 'bg-white/20 hover:bg-white/30 text-white' : 'bg-gray-900 hover:bg-gray-800 text-white'}`}
+        className={`w-full py-3 rounded-lg font-semibold text-sm transition-colors ${theme === 'dark' ? 'bg-white/20 hover:bg-white/30 text-white' : 'bg-gray-900 hover:bg-gray-800 text-white'}`}
       >
         Center on Flight
       </button>
@@ -596,10 +596,10 @@ function FlightPanelContent({ flight, originAirport, destinationAirport, originW
 function WeatherItem({ icon: Icon, label, value, theme }: any) {
   return (
     <div className="flex items-center gap-2">
-      <Icon className={`w-3.5 h-3.5 ${currentTheme === 'dark' ? 'text-white/40' : 'text-gray-500'}`} />
+      <Icon className={`w-3.5 h-3.5 ${theme === 'dark' ? 'text-white/40' : 'text-gray-500'}`} />
       <div className="flex-1">
-        <div className={`text-[9px] ${currentTheme === 'dark' ? 'text-white/40' : 'text-gray-500'}`}>{label}</div>
-        <div className={`text-xs font-semibold ${currentTheme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{value}</div>
+        <div className={`text-[9px] ${theme === 'dark' ? 'text-white/40' : 'text-gray-500'}`}>{label}</div>
+        <div className={`text-xs font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{value}</div>
       </div>
     </div>
   );
@@ -607,14 +607,14 @@ function WeatherItem({ icon: Icon, label, value, theme }: any) {
 
 function TelemetryCard({ icon: Icon, label, value, unit, theme }: any) {
   return (
-    <div className={`p-4 rounded-lg border transition-colors ${currentTheme === 'dark' ? 'bg-white/5 border-white/10 hover:bg-white/[0.07]' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}`}>
+    <div className={`p-4 rounded-lg border transition-colors ${theme === 'dark' ? 'bg-white/5 border-white/10 hover:bg-white/[0.07]' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}`}>
       <div className="flex items-center justify-between mb-2.5">
-        <Icon className={`w-3.5 h-3.5 ${currentTheme === 'dark' ? 'text-white/60' : 'text-gray-600'}`} />
-        <div className={`text-[9px] font-semibold uppercase tracking-wide ${currentTheme === 'dark' ? 'text-white/40' : 'text-gray-500'}`}>{label}</div>
+        <Icon className={`w-3.5 h-3.5 ${theme === 'dark' ? 'text-white/60' : 'text-gray-600'}`} />
+        <div className={`text-[9px] font-semibold uppercase tracking-wide ${theme === 'dark' ? 'text-white/40' : 'text-gray-500'}`}>{label}</div>
       </div>
       <div className="flex items-baseline gap-1">
-        <span className={`text-2xl font-bold ${currentTheme === 'dark' ? 'text-white' : 'text-gray-900'}`} style={{ fontFamily: 'JetBrains Mono, monospace' }}>{value}</span>
-        <span className={`text-[10px] font-semibold ${currentTheme === 'dark' ? 'text-white/40' : 'text-gray-500'}`}>{unit}</span>
+        <span className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`} style={{ fontFamily: 'JetBrains Mono, monospace' }}>{value}</span>
+        <span className={`text-[10px] font-semibold ${theme === 'dark' ? 'text-white/40' : 'text-gray-500'}`}>{unit}</span>
       </div>
     </div>
   );
@@ -622,9 +622,9 @@ function TelemetryCard({ icon: Icon, label, value, unit, theme }: any) {
 
 function InfoRow({ label, value, theme }: { label: string; value: string; theme: 'light' | 'dark' }) {
   return (
-    <div className={`flex items-center justify-between py-2.5 px-3 rounded transition-colors border-b last:border-0 ${currentTheme === 'dark' ? 'hover:bg-white/5 border-white/5' : 'hover:bg-gray-50 border-gray-100'}`}>
-      <span className={`text-[11px] font-medium ${currentTheme === 'dark' ? 'text-white/40' : 'text-gray-500'}`}>{label}</span>
-      <span className={`text-xs font-semibold ${currentTheme === 'dark' ? 'text-white' : 'text-gray-900'}`} style={{ fontFamily: 'JetBrains Mono, monospace' }}>{value}</span>
+    <div className={`flex items-center justify-between py-2.5 px-3 rounded transition-colors border-b last:border-0 ${theme === 'dark' ? 'hover:bg-white/5 border-white/5' : 'hover:bg-gray-50 border-gray-100'}`}>
+      <span className={`text-[11px] font-medium ${theme === 'dark' ? 'text-white/40' : 'text-gray-500'}`}>{label}</span>
+      <span className={`text-xs font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`} style={{ fontFamily: 'JetBrains Mono, monospace' }}>{value}</span>
     </div>
   );
 }
