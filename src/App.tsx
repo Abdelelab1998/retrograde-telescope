@@ -19,10 +19,14 @@ export default function App() {
     [flights, selectedFlightId]
   );
 
-  // Fetch weather for selected flight's current position
-  const flightLat = selectedFlight?.interpolatedLat ?? selectedFlight?.latitude ?? null;
-  const flightLng = selectedFlight?.interpolatedLng ?? selectedFlight?.longitude ?? null;
-  const { weather } = useWeather(flightLat, flightLng);
+  // Fetch weather for origin and destination airports
+  const originLat = originAirport?.latitude ?? null;
+  const originLng = originAirport?.longitude ?? null;
+  const { weather: originWeather } = useWeather(originLat, originLng);
+
+  const destLat = destinationAirport?.latitude ?? null;
+  const destLng = destinationAirport?.longitude ?? null;
+  const { weather: destinationWeather } = useWeather(destLat, destLng);
 
   // Mobile detection
   const [isMobile, setIsMobile] = useState(false);
@@ -260,7 +264,8 @@ export default function App() {
           flight={selectedFlight}
           originAirport={originAirport}
           destinationAirport={destinationAirport}
-          weather={weather}
+          originWeather={originWeather}
+          destinationWeather={destinationWeather}
           onClose={() => setSelectedFlightId(null)}
           onCenter={handleCenterOnFlight}
         />
@@ -283,7 +288,8 @@ export default function App() {
               flight={selectedFlight}
               originAirport={originAirport}
               destinationAirport={destinationAirport}
-              weather={weather}
+              originWeather={originWeather}
+              destinationWeather={destinationWeather}
               onCenter={handleCenterOnFlight}
             />
           </div>
@@ -294,7 +300,7 @@ export default function App() {
 }
 
 // Desktop Panel Component
-function FlightPanel({ flight, originAirport, destinationAirport, weather, onClose, onCenter }: any) {
+function FlightPanel({ flight, originAirport, destinationAirport, originWeather, destinationWeather, onClose, onCenter }: any) {
   return (
     <div className="absolute top-6 right-6 bottom-6 w-[400px] z-30 flex flex-col rounded-lg shadow-2xl border border-white/10 overflow-hidden bg-[#1a1a1a] backdrop-blur-xl">
       <div className="absolute top-5 right-5 z-40">
@@ -307,7 +313,8 @@ function FlightPanel({ flight, originAirport, destinationAirport, weather, onClo
           flight={flight}
           originAirport={originAirport}
           destinationAirport={destinationAirport}
-          weather={weather}
+          originWeather={originWeather}
+          destinationWeather={destinationWeather}
           onCenter={onCenter}
         />
       </div>
@@ -316,7 +323,7 @@ function FlightPanel({ flight, originAirport, destinationAirport, weather, onClo
 }
 
 // Shared Panel Content
-function FlightPanelContent({ flight, originAirport, destinationAirport, weather, onCenter }: any) {
+function FlightPanelContent({ flight, originAirport, destinationAirport, originWeather, destinationWeather, onCenter }: any) {
   return (
     <>
       <div className="mb-6">
@@ -339,35 +346,69 @@ function FlightPanelContent({ flight, originAirport, destinationAirport, weather
         </div>
       </div>
 
-      {/* Weather Information */}
-      <div className="mb-6">
-        <div className="text-[10px] font-semibold text-white/40 uppercase tracking-wide mb-2 px-0.5">Current Weather</div>
-        {weather ? (
-          <div className="p-4 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-3">
-                <Cloud className="w-8 h-8 text-white/60" />
-                <div>
-                  <div className="text-2xl font-bold text-white">{Math.round(weather.temp)}°C</div>
-                  <div className="text-xs text-white/50 capitalize">{weather.weather_description}</div>
-                </div>
-              </div>
-              <div className="text-xs text-white/40">Feels {Math.round(weather.feels_like)}°C</div>
-            </div>
+      {/* Weather Information for Origin and Destination */}
+      <div className="mb-6 space-y-3">
+        <div className="text-[10px] font-semibold text-white/40 uppercase tracking-wide px-0.5">Airport Weather</div>
 
-            <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-white/10">
-              <WeatherItem icon={Wind} label="Wind" value={`${Math.round(weather.wind_speed * 3.6)} km/h`} />
-              <WeatherItem icon={Droplets} label="Humidity" value={`${weather.humidity}%`} />
-              <WeatherItem icon={Eye} label="Visibility" value={`${weather.visibility.toFixed(1)} km`} />
-              <WeatherItem icon={Compass} label="Pressure" value={`${weather.pressure} hPa`} />
+        {/* Origin Weather */}
+        <div>
+          <div className="text-[9px] font-medium text-white/30 mb-1.5 px-0.5 uppercase tracking-wide">
+            Takeoff - {flight.origin} {originAirport && `(${originAirport.city})`}
+          </div>
+          {originWeather ? (
+            <div className="p-3 rounded-lg bg-white/5 border border-white/10">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Cloud className="w-6 h-6 text-white/60" />
+                  <div>
+                    <div className="text-xl font-bold text-white">{Math.round(originWeather.temp)}°C</div>
+                    <div className="text-[10px] text-white/50 capitalize">{originWeather.weather_description}</div>
+                  </div>
+                </div>
+                <div className="text-[10px] text-white/40">Feels {Math.round(originWeather.feels_like)}°C</div>
+              </div>
+              <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-white/10">
+                <WeatherItem icon={Wind} label="Wind" value={`${Math.round(originWeather.wind_speed * 3.6)} km/h`} />
+                <WeatherItem icon={Droplets} label="Humidity" value={`${originWeather.humidity}%`} />
+              </div>
             </div>
+          ) : (
+            <div className="p-3 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 text-xs">
+              <Cloud className="w-4 h-4 mr-2 animate-pulse" />
+              Loading...
+            </div>
+          )}
+        </div>
+
+        {/* Destination Weather */}
+        <div>
+          <div className="text-[9px] font-medium text-white/30 mb-1.5 px-0.5 uppercase tracking-wide">
+            Arrival - {flight.destination} {destinationAirport && `(${destinationAirport.city})`}
           </div>
-        ) : (
-          <div className="p-4 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 text-sm">
-            <Cloud className="w-5 h-5 mr-2 animate-pulse" />
-            Loading weather data...
-          </div>
-        )}
+          {destinationWeather ? (
+            <div className="p-3 rounded-lg bg-white/5 border border-white/10">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Cloud className="w-6 h-6 text-white/60" />
+                  <div>
+                    <div className="text-xl font-bold text-white">{Math.round(destinationWeather.temp)}°C</div>
+                    <div className="text-[10px] text-white/50 capitalize">{destinationWeather.weather_description}</div>
+                  </div>
+                </div>
+                <div className="text-[10px] text-white/40">Feels {Math.round(destinationWeather.feels_like)}°C</div>
+              </div>
+              <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-white/10">
+                <WeatherItem icon={Wind} label="Wind" value={`${Math.round(destinationWeather.wind_speed * 3.6)} km/h`} />
+                <WeatherItem icon={Droplets} label="Humidity" value={`${destinationWeather.humidity}%`} />
+              </div>
+            </div>
+          ) : (
+            <div className="p-3 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 text-xs">
+              <Cloud className="w-4 h-4 mr-2 animate-pulse" />
+              Loading...
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Route */}
