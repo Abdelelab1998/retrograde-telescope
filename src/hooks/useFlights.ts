@@ -24,8 +24,8 @@ export interface Flight {
     flight_number?: string;
 }
 
-// AirLabs - Real-time flight tracking with route information
-// API: https://airlabs.co/
+// AviationStack - Real-time flight tracking with route information
+// API: https://aviationstack.com/
 
 const AIRLINE_MAP: Record<string, string> = {
     'UAL': 'United Airlines',
@@ -125,49 +125,59 @@ export function useFlights() {
 
     const fetchFlights = async () => {
         try {
-            const API_KEY = '403337d8-6986-4833-ac26-9c3abc3410b4';
+            const API_KEY = '3032c954a46cd4ef81afc8adfb19f49e';
             const response = await fetch(
-                `https://airlabs.co/api/v9/flights?api_key=${API_KEY}`
+                `http://api.aviationstack.com/v1/flights?access_key=${API_KEY}&limit=100`
             );
 
             if (!response.ok) {
-                throw new Error(`AirLabs API Error: ${response.status} ${response.statusText}`);
+                throw new Error(`AviationStack API Error: ${response.status} ${response.statusText}`);
             }
 
             const data = await response.json();
 
-            if (!data.response || data.response.length === 0) {
-                throw new Error('No flight data available from AirLabs');
+            if (!data.data || data.data.length === 0) {
+                throw new Error('No flight data available from AviationStack');
             }
 
             const now = Date.now();
 
-            // AirLabs returns array of flight objects - filter and limit to 500 flights
-            const mappedFlights: Flight[] = data.response
-                .filter((flight: any) => {
-                    const lng = flight.lng;
-                    const lat = flight.lat;
-                    const status = flight.status;
+            // AviationStack returns array of flight objects - filter and limit to 500 flights
+            const mappedFlights: Flight[] = data.data
+                .filter((item: any) => {
+                    const live = item.live;
+                    if (!live) return false;
 
-                    // Filter: must have position and be in flight
-                    return lng !== null && lat !== null && status === 'en-route';
+                    const lng = live.longitude;
+                    const lat = live.latitude;
+                    const isGround = live.is_ground;
+
+                    // Filter: must have position and not on ground
+                    return lng !== null && lat !== null && !isGround;
                 })
                 .slice(0, 500) // Limit to 500 flights for fluent UX
-                .map((flight: any) => {
-                    const icao24 = flight.hex || flight.reg_number || `FLIGHT${Math.random().toString(36).substr(2, 9)}`;
-                    const callsign = flight.flight_icao || flight.flight_iata || 'N/A';
-                    const lng = parseFloat(flight.lng);
-                    const lat = parseFloat(flight.lat);
-                    const velocity = parseFloat(flight.speed) || 0; // knots
-                    const heading = parseFloat(flight.dir) || 0; // degrees
-                    const altitude = parseFloat(flight.alt) || 0; // feet
-                    const verticalRate = parseFloat(flight.v_speed) || 0; // ft/min
+                .map((item: any) => {
+                    const flight = item.flight;
+                    const live = item.live;
+                    const departure = item.departure;
+                    const arrival = item.arrival;
+                    const aircraft = item.aircraft;
+                    const airline = item.airline;
 
-                    // Store API data for interpolation (convert knots to m/s for consistency)
+                    const icao24 = flight?.icao || aircraft?.registration || `FLIGHT${Math.random().toString(36).substr(2, 9)}`;
+                    const callsign = flight?.icao || flight?.iata || 'N/A';
+                    const lng = parseFloat(live.longitude);
+                    const lat = parseFloat(live.latitude);
+                    const velocity = parseFloat(live.speed_horizontal) || 0; // km/h
+                    const heading = parseFloat(live.direction) || 0; // degrees
+                    const altitude = parseFloat(live.altitude) || 0; // meters
+                    const verticalRate = parseFloat(live.speed_vertical) || 0; // m/s
+
+                    // Store API data for interpolation (convert km/h to m/s for consistency)
                     lastApiDataRef.current[icao24] = {
                         lng,
                         lat,
-                        velocity: velocity * 0.514444, // knots to m/s
+                        velocity: velocity / 3.6, // km/h to m/s
                         heading,
                         timestamp: now
                     };
@@ -186,28 +196,28 @@ export function useFlights() {
                     }
 
                     // Extract airline name
-                    const airlineName = flight.airline_name || flight.airline_iata || 'Unknown Airline';
+                    const airlineName = airline?.name || airline?.iata || 'Unknown Airline';
 
                     return {
                         icao24,
                         callsign,
-                        origin_country: flight.flag || 'Unknown',
+                        origin_country: departure?.country || 'Unknown',
                         longitude: lng,
                         latitude: lat,
                         interpolatedLng: lng,
                         interpolatedLat: lat,
-                        altitude, // feet
-                        on_ground: false,
-                        velocity, // knots (will be converted in display)
+                        altitude: altitude * 3.28084, // convert meters to feet
+                        on_ground: live.is_ground || false,
+                        velocity: velocity / 1.852, // convert km/h to knots
                         heading,
-                        vertical_rate: verticalRate, // ft/min
+                        vertical_rate: verticalRate * 196.85, // convert m/s to ft/min
                         trail: [...currentTrail],
-                        origin: flight.dep_iata || flight.dep_icao || 'N/A',
-                        destination: flight.arr_iata || flight.arr_icao || 'N/A',
+                        origin: departure?.iata || departure?.icao || 'N/A',
+                        destination: arrival?.iata || arrival?.icao || 'N/A',
                         airline: airlineName,
-                        aircraft: flight.aircraft_icao || 'Aircraft',
-                        registration: flight.reg_number || icao24.toUpperCase(),
-                        flight_number: flight.flight_number || callsign
+                        aircraft: aircraft?.icao || aircraft?.iata || 'Aircraft',
+                        registration: aircraft?.registration || icao24.toUpperCase(),
+                        flight_number: flight?.number || callsign
                     };
                 });
 
@@ -215,9 +225,9 @@ export function useFlights() {
             setLoading(false);
             setError(null);
 
-            console.log(`✈️ AirLabs: Tracking ${mappedFlights.length} flights globally`);
+            console.log(`✈️ AviationStack: Tracking ${mappedFlights.length} flights globally`);
         } catch (err: any) {
-            console.error('AirLabs API error:', err);
+            console.error('AviationStack API error:', err);
             setError(`Connection issue: ${err.message}`);
             setLoading(false);
         }
