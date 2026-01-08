@@ -113,7 +113,7 @@ export default function App() {
   };
 
   return (
-    <div className="relative w-full h-full bg-[#0a0a0a] overflow-hidden antialiased text-white" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div className="fixed inset-0 w-full h-full bg-[#0a0a0a] overflow-hidden antialiased text-white" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
       {/* Search HUD - Responsive */}
       <div className={`absolute ${isMobile ? 'top-4 left-4 right-4' : 'top-6 left-6'} z-20 flex flex-col gap-3 ${isMobile ? 'w-auto' : 'max-w-md w-full'} pointer-events-none`}>
         <div className="rounded-lg p-1 flex flex-col shadow-xl border border-white/10 pointer-events-auto overflow-hidden bg-[#1a1a1a] backdrop-blur-xl">
@@ -277,8 +277,11 @@ export default function App() {
           <div className="flex items-center justify-between p-4 border-b border-white/10">
             <h3 className="text-lg font-bold">{selectedFlight.callsign}</h3>
             <button
-              onClick={() => setIsMobilePanelOpen(false)}
-              className="p-2 rounded bg-white/10 hover:bg-white/20"
+              onClick={() => {
+                setIsMobilePanelOpen(false);
+                setSelectedFlightId(null);
+              }}
+              className="p-2 rounded bg-white/10 hover:bg-white/20 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
