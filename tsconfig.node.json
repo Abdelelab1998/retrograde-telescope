@@ -12,7 +12,8 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "strict": false,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "composite": true
   },
   "include": ["vite.config.ts"]
 }
