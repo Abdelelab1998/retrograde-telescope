@@ -153,7 +153,7 @@ export function useFlights() {
                     // Filter: must have position, not on ground, and moving
                     return lng !== null && lat !== null && !onGround && velocity > 0;
                 })
-                .slice(0, 100) // Limit to 100 flights for fluent UX
+                .slice(0, 500) // Limit to 500 flights for fluent UX
                 .map((state: any[]) => {
                     // OpenSky state vector format:
                     // 0: icao24, 1: callsign, 2: origin_country, 5: longitude, 6: latitude
