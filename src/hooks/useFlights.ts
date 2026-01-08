@@ -58,6 +58,7 @@ export function useFlights() {
     const trailsRef = useRef<Record<string, [number, number][]>>({});
     const lastApiDataRef = useRef<Record<string, { lng: number; lat: number; velocity: number; heading: number; timestamp: number }>>({});
     const animationFrameRef = useRef<number>();
+    const routeCacheRef = useRef<Record<string, { origin: string; destination: string }>>({});
 
     // Smooth interpolation between API updates
     const interpolatePosition = (
@@ -222,9 +223,41 @@ export function useFlights() {
         }
     };
 
+    // Fetch route data for a flight from AviationStack (free tier)
+    const fetchRouteData = async (callsign: string, icao24: string) => {
+        // Check cache first
+        if (routeCacheRef.current[icao24]) {
+            return routeCacheRef.current[icao24];
+        }
+
+        try {
+            // Try AviationStack free API (limited to 100 requests/month)
+            const response = await fetch(
+                `http://api.aviationstack.com/v1/flights?access_key=free&flight_iata=${callsign}`
+            );
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.data && data.data[0]) {
+                    const flight = data.data[0];
+                    const routeData = {
+                        origin: flight.departure?.iata || 'N/A',
+                        destination: flight.arrival?.iata || 'N/A'
+                    };
+                    routeCacheRef.current[icao24] = routeData;
+                    return routeData;
+                }
+            }
+        } catch (err) {
+            // Silently fail and return N/A
+        }
+
+        return { origin: 'N/A', destination: 'N/A' };
+    };
+
     useEffect(() => {
         fetchFlights(); // Initial fetch
-        const interval = setInterval(fetchFlights, 10000); // Update every 10 seconds
+        const interval = setInterval(fetchFlights, 5000); // Update every 5 seconds for smoother movement
 
         return () => clearInterval(interval);
     }, []);

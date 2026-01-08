@@ -59,23 +59,77 @@ export default function App() {
     }
   }, [selectedFlight, isMobile]);
 
-  // Search both flights and airports
+  // Enhanced search with better matching
   const searchResults = useMemo(() => {
-    if (searchQuery.length < 2) return { flights: [], airports: [] };
-    const q = searchQuery.toLowerCase();
+    if (searchQuery.length < 1) return { flights: [], airports: [] };
+    const q = searchQuery.toLowerCase().trim();
 
-    const matchedFlights = flights.filter((f: Flight) =>
-      f.callsign.toLowerCase().includes(q) ||
-      f.icao24.toLowerCase().includes(q) ||
-      f.airline?.toLowerCase().includes(q)
-    ).slice(0, 3);
+    // Search flights with priority scoring
+    const matchedFlights = flights
+      .map((f: Flight) => {
+        let score = 0;
+        const callsign = f.callsign.toLowerCase();
+        const icao = f.icao24.toLowerCase();
+        const airline = f.airline?.toLowerCase() || '';
+        const country = f.origin_country.toLowerCase();
+        const origin = f.origin?.toLowerCase() || '';
+        const dest = f.destination?.toLowerCase() || '';
 
-    const matchedAirports = airports.filter((a: Airport) =>
-      a.iata?.toLowerCase().startsWith(q) ||
-      a.icao?.toLowerCase().startsWith(q) ||
-      a.name?.toLowerCase().includes(q) ||
-      a.city?.toLowerCase().includes(q)
-    ).slice(0, 3);
+        // Exact matches get highest priority
+        if (callsign === q) score += 100;
+        if (icao === q) score += 100;
+        if (origin === q || dest === q) score += 90;
+
+        // Starts with gets high priority
+        if (callsign.startsWith(q)) score += 50;
+        if (icao.startsWith(q)) score += 50;
+        if (airline.startsWith(q)) score += 40;
+
+        // Contains gets medium priority
+        if (callsign.includes(q)) score += 20;
+        if (airline.includes(q)) score += 15;
+        if (country.includes(q)) score += 10;
+        if (origin.includes(q) || dest.includes(q)) score += 25;
+
+        return { flight: f, score };
+      })
+      .filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5)
+      .map(item => item.flight);
+
+    // Search airports with priority scoring
+    const matchedAirports = airports
+      .map((a: Airport) => {
+        let score = 0;
+        const iata = a.iata?.toLowerCase() || '';
+        const icao = a.icao?.toLowerCase() || '';
+        const name = a.name?.toLowerCase() || '';
+        const city = a.city?.toLowerCase() || '';
+        const country = a.country?.toLowerCase() || '';
+
+        // Exact IATA/ICAO match gets highest priority
+        if (iata === q || icao === q) score += 100;
+
+        // Starts with for codes
+        if (iata.startsWith(q)) score += 80;
+        if (icao.startsWith(q)) score += 80;
+
+        // Name/city matches
+        if (name.startsWith(q)) score += 60;
+        if (city.startsWith(q)) score += 50;
+
+        // Contains
+        if (name.includes(q)) score += 30;
+        if (city.includes(q)) score += 25;
+        if (country.includes(q)) score += 15;
+
+        return { airport: a, score };
+      })
+      .filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5)
+      .map(item => item.airport);
 
     return { flights: matchedFlights, airports: matchedAirports };
   }, [flights, airports, searchQuery]);
