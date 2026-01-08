@@ -3,6 +3,7 @@ import { Map, MapControls, MapMarker, MarkerContent, MapRef } from '@/components
 import { useFlights, Flight } from '@/hooks/useFlights';
 import { useAirports, Airport } from '@/hooks/useAirports';
 import { useWeather } from '@/hooks/useWeather';
+import { SessionTimeout } from '@/components/SessionTimeout';
 import { Search, Plane, X, MapPin, Gauge, Navigation, Wind, TrendingUp, TrendingDown, Radio, ArrowRight, Cloud, Droplets, Eye, Compass } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -352,6 +353,9 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* Session Timeout Widget */}
+      <SessionTimeout />
     </div>
   );
 }

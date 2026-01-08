@@ -91,8 +91,8 @@ export function useFlights() {
 
                     const elapsedSeconds = (now - lastKnown.timestamp) / 1000;
 
-                    // Only interpolate for reasonable time periods (not more than 30 seconds)
-                    if (elapsedSeconds > 30) return flight;
+                    // Only interpolate for reasonable time periods (not more than 60 seconds)
+                    if (elapsedSeconds > 60) return flight;
 
                     // Interpolate position
                     const [interpLng, interpLat] = interpolatePosition(
@@ -225,7 +225,7 @@ export function useFlights() {
 
     useEffect(() => {
         fetchFlights(); // Initial fetch
-        const interval = setInterval(fetchFlights, 5000); // Update every 5 seconds for smoother movement
+        const interval = setInterval(fetchFlights, 45000); // Update every 45 seconds, interpolation handles smooth movement
 
         return () => clearInterval(interval);
     }, []);
