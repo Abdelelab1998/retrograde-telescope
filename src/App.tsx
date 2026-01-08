@@ -19,6 +19,21 @@ export default function App() {
     [flights, selectedFlightId]
   );
 
+  // Get origin and destination airport coordinates
+  const originAirport = useMemo(() => {
+    if (!selectedFlight?.origin) return null;
+    return airports.find((a: Airport) =>
+      a.iata === selectedFlight.origin || a.icao === selectedFlight.origin
+    );
+  }, [selectedFlight, airports]);
+
+  const destinationAirport = useMemo(() => {
+    if (!selectedFlight?.destination) return null;
+    return airports.find((a: Airport) =>
+      a.iata === selectedFlight.destination || a.icao === selectedFlight.destination
+    );
+  }, [selectedFlight, airports]);
+
   // Fetch weather for origin and destination airports
   const originLat = originAirport?.latitude ?? null;
   const originLng = originAirport?.longitude ?? null;
@@ -43,21 +58,6 @@ export default function App() {
       setIsMobilePanelOpen(true);
     }
   }, [selectedFlight, isMobile]);
-
-  // Get origin and destination airport coordinates
-  const originAirport = useMemo(() => {
-    if (!selectedFlight?.origin) return null;
-    return airports.find((a: Airport) =>
-      a.iata === selectedFlight.origin || a.icao === selectedFlight.origin
-    );
-  }, [selectedFlight, airports]);
-
-  const destinationAirport = useMemo(() => {
-    if (!selectedFlight?.destination) return null;
-    return airports.find((a: Airport) =>
-      a.iata === selectedFlight.destination || a.icao === selectedFlight.destination
-    );
-  }, [selectedFlight, airports]);
 
   // Search both flights and airports
   const searchResults = useMemo(() => {
