@@ -24,8 +24,8 @@ export interface Flight {
     flight_number?: string;
 }
 
-// OpenSky Network - Free, open-source flight tracking (no API key needed!)
-// API: https://opensky-network.org/
+// AirLabs - Real-time flight tracking with route information
+// API: https://airlabs.co/
 
 const AIRLINE_MAP: Record<string, string> = {
     'UAL': 'United Airlines',
@@ -50,7 +50,47 @@ const AIRLINE_MAP: Record<string, string> = {
     'ACA': 'Air Canada',
 };
 
-export function useFlights() {
+// Generate 100 dummy flights for testing
+const generateDummyFlights = (): Flight[] => {
+    const airlines = Object.keys(AIRLINE_MAP);
+    const airports = ['JFK', 'LAX', 'ORD', 'DFW', 'DEN', 'ATL', 'SFO', 'SEA', 'MIA', 'BOS', 'LHR', 'CDG', 'FRA', 'AMS', 'DXB'];
+    const dummyFlights: Flight[] = [];
+
+    for (let i = 0; i < 100; i++) {
+        const airlineCode = airlines[Math.floor(Math.random() * airlines.length)];
+        const lng = -180 + Math.random() * 360; // Random longitude
+        const lat = -60 + Math.random() * 120; // Random latitude (avoid poles)
+        const velocity = 400 + Math.random() * 200; // 400-600 knots
+        const heading = Math.random() * 360;
+        const altitude = 30000 + Math.random() * 15000; // 30k-45k feet
+
+        dummyFlights.push({
+            icao24: `DUMMY${i.toString().padStart(3, '0')}`,
+            callsign: `${airlineCode}${Math.floor(100 + Math.random() * 900)}`,
+            origin_country: 'Demo Country',
+            longitude: lng,
+            latitude: lat,
+            interpolatedLng: lng,
+            interpolatedLat: lat,
+            altitude,
+            on_ground: false,
+            velocity,
+            heading,
+            vertical_rate: -500 + Math.random() * 1000, // -500 to +500 fpm
+            trail: [[lng, lat]],
+            origin: airports[Math.floor(Math.random() * airports.length)],
+            destination: airports[Math.floor(Math.random() * airports.length)],
+            airline: AIRLINE_MAP[airlineCode],
+            aircraft: 'B738',
+            registration: `N${Math.floor(10000 + Math.random() * 90000)}`,
+            flight_number: `${airlineCode}${Math.floor(100 + Math.random() * 900)}`
+        });
+    }
+
+    return dummyFlights;
+};
+
+export function useFlights(useDummyData: boolean = false) {
     const [flights, setFlights] = useState<Flight[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -125,50 +165,52 @@ export function useFlights() {
 
     const fetchFlights = async () => {
         try {
+            const API_KEY = '403337d8-6986-4833-ac26-9c3abc3410b4';
             const response = await fetch(
-                'https://opensky-network.org/api/states/all'
+                `https://airlabs.co/api/v9/flights?api_key=${API_KEY}`
             );
 
             if (!response.ok) {
-                throw new Error(`OpenSky API Error: ${response.status} ${response.statusText}`);
+                throw new Error(`AirLabs API Error: ${response.status} ${response.statusText}`);
             }
 
             const data = await response.json();
 
-            if (!data.states || data.states.length === 0) {
-                throw new Error('No flight data available from OpenSky Network');
+            if (!data.response || data.response.length === 0) {
+                throw new Error('No flight data available from AirLabs');
             }
 
             const now = Date.now();
 
-            // OpenSky returns array of arrays - filter and limit to 500 flights
-            const mappedFlights: Flight[] = data.states
-                .filter((state: any[]) => {
-                    const lng = state[5];
-                    const lat = state[6];
-                    const onGround = state[8];
-                    const velocity = state[9];
+            // AirLabs returns array of flight objects - filter and limit to 500 flights
+            const mappedFlights: Flight[] = data.response
+                .filter((flight: any) => {
+                    const lng = flight.lng;
+                    const lat = flight.lat;
+                    const status = flight.status;
 
-                    // Filter: must have position, not on ground, and moving
-                    return lng !== null && lat !== null && !onGround && velocity > 0;
+                    // Filter: must have position and be in flight
+                    return lng !== null && lat !== null && status === 'en-route';
                 })
                 .slice(0, 500) // Limit to 500 flights for fluent UX
-                .map((state: any[]) => {
-                    // OpenSky state vector format:
-                    // 0: icao24, 1: callsign, 2: origin_country, 5: longitude, 6: latitude
-                    // 7: baro_altitude, 8: on_ground, 9: velocity, 10: true_track, 11: vertical_rate
+                .map((flight: any) => {
+                    const icao24 = flight.hex || flight.reg_number || `FLIGHT${Math.random().toString(36).substr(2, 9)}`;
+                    const callsign = flight.flight_icao || flight.flight_iata || 'N/A';
+                    const lng = parseFloat(flight.lng);
+                    const lat = parseFloat(flight.lat);
+                    const velocity = parseFloat(flight.speed) || 0; // knots
+                    const heading = parseFloat(flight.dir) || 0; // degrees
+                    const altitude = parseFloat(flight.alt) || 0; // feet
+                    const verticalRate = parseFloat(flight.v_speed) || 0; // ft/min
 
-                    const icao24 = state[0] || `FLIGHT${Math.random().toString(36).substr(2, 9)}`;
-                    const callsign = (state[1] || 'N/A').trim();
-                    const lng = parseFloat(state[5]);
-                    const lat = parseFloat(state[6]);
-                    const velocity = parseFloat(state[9]) || 0; // m/s
-                    const heading = parseFloat(state[10]) || 0; // degrees
-                    const altitude = parseFloat(state[7]) || 0; // meters
-                    const verticalRate = parseFloat(state[11]) || 0; // m/s
-
-                    // Store API data for interpolation
-                    lastApiDataRef.current[icao24] = { lng, lat, velocity, heading, timestamp: now };
+                    // Store API data for interpolation (convert knots to m/s for consistency)
+                    lastApiDataRef.current[icao24] = {
+                        lng,
+                        lat,
+                        velocity: velocity * 0.514444, // knots to m/s
+                        heading,
+                        timestamp: now
+                    };
 
                     // Update trail
                     if (!trailsRef.current[icao24]) {
@@ -183,30 +225,29 @@ export function useFlights() {
                         if (currentTrail.length > 50) currentTrail.shift();
                     }
 
-                    // Try to extract airline from callsign (first 3 chars)
-                    const airlineCode = callsign.substring(0, 3).toUpperCase();
-                    const airlineName = AIRLINE_MAP[airlineCode] || 'Unknown Airline';
+                    // Extract airline name
+                    const airlineName = flight.airline_name || flight.airline_iata || 'Unknown Airline';
 
                     return {
                         icao24,
                         callsign,
-                        origin_country: state[2] || 'Unknown',
+                        origin_country: flight.flag || 'Unknown',
                         longitude: lng,
                         latitude: lat,
                         interpolatedLng: lng,
                         interpolatedLat: lat,
-                        altitude: altitude * 3.28084, // convert meters to feet
-                        on_ground: state[8] || false,
-                        velocity: velocity * 1.94384, // convert m/s to knots
+                        altitude, // feet
+                        on_ground: false,
+                        velocity, // knots
                         heading,
-                        vertical_rate: verticalRate * 196.85, // convert m/s to ft/min
+                        vertical_rate: verticalRate, // ft/min
                         trail: [...currentTrail],
-                        origin: 'N/A', // OpenSky doesn't provide origin/destination
-                        destination: 'N/A',
+                        origin: flight.dep_iata || flight.dep_icao || 'N/A',
+                        destination: flight.arr_iata || flight.arr_icao || 'N/A',
                         airline: airlineName,
-                        aircraft: 'Aircraft', // OpenSky doesn't provide aircraft type
-                        registration: icao24.toUpperCase(),
-                        flight_number: callsign
+                        aircraft: flight.aircraft_icao || 'Aircraft',
+                        registration: flight.reg_number || icao24.toUpperCase(),
+                        flight_number: flight.flight_number || callsign
                     };
                 });
 
@@ -214,20 +255,29 @@ export function useFlights() {
             setLoading(false);
             setError(null);
 
-            console.log(`✈️ OpenSky Network: Tracking ${mappedFlights.length} flights globally`);
+            console.log(`✈️ AirLabs: Tracking ${mappedFlights.length} flights globally`);
         } catch (err: any) {
-            console.error('OpenSky API error:', err);
+            console.error('AirLabs API error:', err);
             setError(`Connection issue: ${err.message}`);
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchFlights(); // Initial fetch
-        const interval = setInterval(fetchFlights, 45000); // Update every 45 seconds, interpolation handles smooth movement
-
-        return () => clearInterval(interval);
-    }, []);
+        if (useDummyData) {
+            // Load dummy data immediately
+            const dummyFlights = generateDummyFlights();
+            setFlights(dummyFlights);
+            setLoading(false);
+            setError(null);
+            console.log(`✈️ Dummy Mode: Loaded ${dummyFlights.length} fake flights`);
+        } else {
+            // Fetch real data from AirLabs
+            fetchFlights(); // Initial fetch
+            const interval = setInterval(fetchFlights, 45000); // Update every 45 seconds
+            return () => clearInterval(interval);
+        }
+    }, [useDummyData]);
 
     return { flights, loading, error };
 }

@@ -4,11 +4,12 @@ import { useFlights, Flight } from '@/hooks/useFlights';
 import { useAirports, Airport } from '@/hooks/useAirports';
 import { useWeather } from '@/hooks/useWeather';
 import { SessionTimeout } from '@/components/SessionTimeout';
-import { Search, Plane, X, MapPin, Gauge, Navigation, Wind, TrendingUp, TrendingDown, Radio, ArrowRight, Cloud, Droplets, Eye, Compass } from 'lucide-react';
+import { Search, Plane, X, MapPin, Gauge, Navigation, Wind, TrendingUp, TrendingDown, Radio, ArrowRight, Cloud, Droplets, Eye, Compass, Database } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function App() {
-  const { flights, error } = useFlights();
+  const [useDummyData, setUseDummyData] = useState(false);
+  const { flights, error } = useFlights(useDummyData);
   const { airports } = useAirports();
   const [selectedFlightId, setSelectedFlightId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -180,6 +181,7 @@ export default function App() {
               className="bg-transparent border-none outline-none text-sm w-full placeholder:text-white/30 font-medium text-white"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              style={{ fontSize: '16px' }}
             />
             {searchQuery && (
               <button
@@ -189,6 +191,27 @@ export default function App() {
                 <X className="w-4 h-4" />
               </button>
             )}
+          </div>
+
+          {/* Data Mode Toggle */}
+          <div className="px-4 pb-2.5 border-b border-white/10">
+            <button
+              onClick={() => setUseDummyData(!useDummyData)}
+              className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
+            >
+              <div className="flex items-center gap-2">
+                <Database className="w-4 h-4 text-white/60" />
+                <span className="text-xs font-medium text-white/80">Data Mode</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className={`text-xs font-semibold ${useDummyData ? 'text-amber-400' : 'text-emerald-400'}`}>
+                  {useDummyData ? 'Dummy Data' : 'Real Data'}
+                </span>
+                <div className={`w-10 h-5 rounded-full transition-colors ${useDummyData ? 'bg-amber-500/30' : 'bg-emerald-500/30'}`}>
+                  <div className={`w-4 h-4 rounded-full bg-white shadow-lg transition-transform ${useDummyData ? 'translate-x-5' : 'translate-x-0.5'} mt-0.5`} />
+                </div>
+              </div>
+            </button>
           </div>
 
           {/* Search Results */}
