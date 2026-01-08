@@ -165,19 +165,17 @@ export function useFlights(useDummyData: boolean = false) {
 
     const fetchFlights = async () => {
         try {
-            const API_KEY = '403337d8-6986-4833-ac26-9c3abc3410b4';
-            const response = await fetch(
-                `https://airlabs.co/api/v9/flights?api_key=${API_KEY}`
-            );
+            // Call our secure backend API instead of AirLabs directly
+            const response = await fetch('/api/flights');
 
             if (!response.ok) {
-                throw new Error(`AirLabs API Error: ${response.status} ${response.statusText}`);
+                throw new Error(`Backend API Error: ${response.status} ${response.statusText}`);
             }
 
             const data = await response.json();
 
             if (!data.response || data.response.length === 0) {
-                throw new Error('No flight data available from AirLabs');
+                throw new Error('No flight data available from backend');
             }
 
             const now = Date.now();
@@ -255,9 +253,9 @@ export function useFlights(useDummyData: boolean = false) {
             setLoading(false);
             setError(null);
 
-            console.log(`✈️ AirLabs: Tracking ${mappedFlights.length} flights globally`);
+            console.log(`✈️ Backend API: Tracking ${mappedFlights.length} flights globally`);
         } catch (err: any) {
-            console.error('AirLabs API error:', err);
+            console.error('Backend API error:', err);
             setError(`Connection issue: ${err.message}`);
             setLoading(false);
         }
