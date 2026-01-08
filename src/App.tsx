@@ -349,99 +349,115 @@ function FlightPanelContent({ flight, originAirport, destinationAirport, originW
         </div>
       </div>
 
-      {/* Weather Information for Origin and Destination */}
-      <div className="mb-6 space-y-3">
-        <div className="text-[10px] font-semibold text-white/40 uppercase tracking-wide px-0.5">Airport Weather</div>
+      {/* Weather Information for Origin and Destination - Only show if airports are known */}
+      {(flight.origin !== 'N/A' || flight.destination !== 'N/A') && (
+        <div className="mb-6 space-y-3">
+          <div className="text-[10px] font-semibold text-white/40 uppercase tracking-wide px-0.5">Airport Weather</div>
 
-        {/* Origin Weather */}
-        <div>
-          <div className="text-[9px] font-medium text-white/30 mb-1.5 px-0.5 uppercase tracking-wide">
-            Takeoff - {flight.origin} {originAirport && `(${originAirport.city})`}
-          </div>
-          {originWeather ? (
-            <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Cloud className="w-6 h-6 text-white/60" />
-                  <div>
-                    <div className="text-xl font-bold text-white">{Math.round(originWeather.temp)}°C</div>
-                    <div className="text-[10px] text-white/50 capitalize">{originWeather.weather_description}</div>
+          {/* Origin Weather */}
+          {flight.origin !== 'N/A' && (
+            <div>
+              <div className="text-[9px] font-medium text-white/30 mb-1.5 px-0.5 uppercase tracking-wide">
+                Takeoff - {flight.origin} {originAirport && `(${originAirport.city})`}
+              </div>
+              {originWeather ? (
+                <div className="p-3 rounded-lg bg-white/5 border border-white/10">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Cloud className="w-6 h-6 text-white/60" />
+                      <div>
+                        <div className="text-xl font-bold text-white">{Math.round(originWeather.temp)}°C</div>
+                        <div className="text-[10px] text-white/50 capitalize">{originWeather.weather_description}</div>
+                      </div>
+                    </div>
+                    <div className="text-[10px] text-white/40">Feels {Math.round(originWeather.feels_like)}°C</div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-white/10">
+                    <WeatherItem icon={Wind} label="Wind" value={`${Math.round(originWeather.wind_speed * 3.6)} km/h`} />
+                    <WeatherItem icon={Droplets} label="Humidity" value={`${originWeather.humidity}%`} />
                   </div>
                 </div>
-                <div className="text-[10px] text-white/40">Feels {Math.round(originWeather.feels_like)}°C</div>
-              </div>
-              <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-white/10">
-                <WeatherItem icon={Wind} label="Wind" value={`${Math.round(originWeather.wind_speed * 3.6)} km/h`} />
-                <WeatherItem icon={Droplets} label="Humidity" value={`${originWeather.humidity}%`} />
-              </div>
+              ) : (
+                <div className="p-3 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 text-xs">
+                  <Cloud className="w-4 h-4 mr-2 animate-pulse" />
+                  Loading...
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="p-3 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 text-xs">
-              <Cloud className="w-4 h-4 mr-2 animate-pulse" />
-              Loading...
+          )}
+
+          {/* Destination Weather */}
+          {flight.destination !== 'N/A' && (
+            <div>
+              <div className="text-[9px] font-medium text-white/30 mb-1.5 px-0.5 uppercase tracking-wide">
+                Arrival - {flight.destination} {destinationAirport && `(${destinationAirport.city})`}
+              </div>
+              {destinationWeather ? (
+                <div className="p-3 rounded-lg bg-white/5 border border-white/10">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Cloud className="w-6 h-6 text-white/60" />
+                      <div>
+                        <div className="text-xl font-bold text-white">{Math.round(destinationWeather.temp)}°C</div>
+                        <div className="text-[10px] text-white/50 capitalize">{destinationWeather.weather_description}</div>
+                      </div>
+                    </div>
+                    <div className="text-[10px] text-white/40">Feels {Math.round(destinationWeather.feels_like)}°C</div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-white/10">
+                    <WeatherItem icon={Wind} label="Wind" value={`${Math.round(destinationWeather.wind_speed * 3.6)} km/h`} />
+                    <WeatherItem icon={Droplets} label="Humidity" value={`${destinationWeather.humidity}%`} />
+                  </div>
+                </div>
+              ) : (
+                <div className="p-3 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 text-xs">
+                  <Cloud className="w-4 h-4 mr-2 animate-pulse" />
+                  Loading...
+                </div>
+              )}
             </div>
           )}
         </div>
-
-        {/* Destination Weather */}
-        <div>
-          <div className="text-[9px] font-medium text-white/30 mb-1.5 px-0.5 uppercase tracking-wide">
-            Arrival - {flight.destination} {destinationAirport && `(${destinationAirport.city})`}
-          </div>
-          {destinationWeather ? (
-            <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Cloud className="w-6 h-6 text-white/60" />
-                  <div>
-                    <div className="text-xl font-bold text-white">{Math.round(destinationWeather.temp)}°C</div>
-                    <div className="text-[10px] text-white/50 capitalize">{destinationWeather.weather_description}</div>
-                  </div>
-                </div>
-                <div className="text-[10px] text-white/40">Feels {Math.round(destinationWeather.feels_like)}°C</div>
-              </div>
-              <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-white/10">
-                <WeatherItem icon={Wind} label="Wind" value={`${Math.round(destinationWeather.wind_speed * 3.6)} km/h`} />
-                <WeatherItem icon={Droplets} label="Humidity" value={`${destinationWeather.humidity}%`} />
-              </div>
-            </div>
-          ) : (
-            <div className="p-3 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 text-xs">
-              <Cloud className="w-4 h-4 mr-2 animate-pulse" />
-              Loading...
-            </div>
-          )}
-        </div>
-      </div>
+      )}
 
       {/* Route */}
       <div className="mb-6">
         <div className="text-[10px] font-semibold text-white/40 uppercase tracking-wide mb-2 px-0.5">Flight Path</div>
         <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex-1 text-center">
-              <div className="text-[10px] font-medium text-white/40 mb-2 uppercase tracking-wide">Origin</div>
-              <div className="text-3xl font-bold text-white" style={{ fontFamily: 'JetBrains Mono, monospace' }}>{flight.origin}</div>
-              {originAirport && <div className="text-[9px] text-white/30 mt-1">{originAirport.city}</div>}
-            </div>
+          {flight.origin !== 'N/A' || flight.destination !== 'N/A' ? (
+            <>
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex-1 text-center">
+                  <div className="text-[10px] font-medium text-white/40 mb-2 uppercase tracking-wide">Origin</div>
+                  <div className="text-3xl font-bold text-white" style={{ fontFamily: 'JetBrains Mono, monospace' }}>{flight.origin}</div>
+                  {originAirport && <div className="text-[9px] text-white/30 mt-1">{originAirport.city}</div>}
+                </div>
 
-            <div className="flex items-center gap-2 px-3">
-              <div className="w-12 h-px bg-white/20"></div>
-              <ArrowRight className="w-4 h-4 text-white/60" />
-              <div className="w-12 h-px bg-white/20"></div>
-            </div>
+                <div className="flex items-center gap-2 px-3">
+                  <div className="w-12 h-px bg-white/20"></div>
+                  <ArrowRight className="w-4 h-4 text-white/60" />
+                  <div className="w-12 h-px bg-white/20"></div>
+                </div>
 
-            <div className="flex-1 text-center">
-              <div className="text-[10px] font-medium text-white/40 mb-2 uppercase tracking-wide">Destination</div>
-              <div className="text-3xl font-bold text-white" style={{ fontFamily: 'JetBrains Mono, monospace' }}>{flight.destination}</div>
-              {destinationAirport && <div className="text-[9px] text-white/30 mt-1">{destinationAirport.city}</div>}
-            </div>
-          </div>
+                <div className="flex-1 text-center">
+                  <div className="text-[10px] font-medium text-white/40 mb-2 uppercase tracking-wide">Destination</div>
+                  <div className="text-3xl font-bold text-white" style={{ fontFamily: 'JetBrains Mono, monospace' }}>{flight.destination}</div>
+                  {destinationAirport && <div className="text-[9px] text-white/30 mt-1">{destinationAirport.city}</div>}
+                </div>
+              </div>
 
-          <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-center gap-2 text-xs text-white/50">
-            <Plane className="w-3 h-3" />
-            <span>Currently over {flight.origin_country}</span>
-          </div>
+              <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-center gap-2 text-xs text-white/50">
+                <Plane className="w-3 h-3" />
+                <span>Currently over {flight.origin_country}</span>
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-4 text-center">
+              <MapPin className="w-8 h-8 text-white/20 mb-2" />
+              <div className="text-sm text-white/40 mb-1">Route information unavailable</div>
+              <div className="text-[10px] text-white/30">Currently over {flight.origin_country}</div>
+            </div>
+          )}
         </div>
       </div>
 
