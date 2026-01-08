@@ -264,6 +264,10 @@ export function useFlights(useDummyData: boolean = false) {
     };
 
     useEffect(() => {
+        // Clear flights when switching modes
+        setFlights([]);
+        setLoading(true);
+
         if (useDummyData) {
             // Load dummy data immediately
             const dummyFlights = generateDummyFlights();
