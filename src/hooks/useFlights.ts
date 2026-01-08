@@ -127,7 +127,7 @@ export function useFlights() {
         try {
             const API_KEY = '3032c954a46cd4ef81afc8adfb19f49e';
             const response = await fetch(
-                `http://api.aviationstack.com/v1/flights?access_key=${API_KEY}&limit=100`
+                `https://api.aviationstack.com/v1/flights?access_key=${API_KEY}&limit=100`
             );
 
             if (!response.ok) {
