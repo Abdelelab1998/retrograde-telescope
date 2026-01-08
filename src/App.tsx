@@ -273,8 +273,8 @@ export default function App() {
         )}
       </div>
 
-      {/* Data Mode Toggle - Top Right */}
-      <div className={`absolute ${isMobile ? 'top-4 right-4' : 'top-6 right-6'} z-20 pointer-events-none`}>
+      {/* Data Mode Toggle - Top Right Desktop, Bottom Left Mobile */}
+      <div className={`absolute ${isMobile ? 'bottom-4 left-4' : 'top-6 right-6'} z-20 pointer-events-none`}>
         <button
           onClick={() => setUseDummyData(!useDummyData)}
           className="pointer-events-auto flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#1a1a1a] hover:bg-[#252525] transition-colors border border-white/10 shadow-xl backdrop-blur-xl"
