@@ -517,9 +517,9 @@ function FlightPanelContent({ flight, originAirport, destinationAirport, originW
 
       {/* Telemetry */}
       <div className="grid grid-cols-2 gap-3 mb-6">
-        <TelemetryCard icon={Gauge} label="Altitude" value={Math.round(flight.altitude * 3.28084).toLocaleString()} unit="FT" />
-        <TelemetryCard icon={Wind} label="Speed" value={Math.round(flight.velocity * 1.94384).toLocaleString()} unit="KTS" />
-        <TelemetryCard icon={flight.vertical_rate > 1 ? TrendingUp : TrendingDown} label="V/S" value={Math.abs(Math.round(flight.vertical_rate * 196.85)).toLocaleString()} unit="FPM" />
+        <TelemetryCard icon={Gauge} label="Altitude" value={Math.round(flight.altitude).toLocaleString()} unit="FT" />
+        <TelemetryCard icon={Wind} label="Speed" value={Math.round(flight.velocity).toLocaleString()} unit="KTS" />
+        <TelemetryCard icon={flight.vertical_rate > 1 ? TrendingUp : TrendingDown} label="V/S" value={Math.abs(Math.round(flight.vertical_rate)).toLocaleString()} unit="FPM" />
         <TelemetryCard icon={Navigation} label="Heading" value={Math.round(flight.heading).toString().padStart(3, '0')} unit="°" />
       </div>
 
